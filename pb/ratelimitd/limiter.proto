@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package ratelimitd;
+option go_package = "github.com/bububa/ratelimitd/pb";
+
+message Limiter {
+    string name = 1;
+    int32 rate = 2;
+    int64 interval = 3;
+}

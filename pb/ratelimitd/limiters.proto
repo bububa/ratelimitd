@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+import public "pb/ratelimitd/limiter.proto";
+
+package ratelimitd;
+option go_package = "github.com/bububa/ratelimitd/pb";
+
+message LimiterList {
+    repeated ratelimitd.Limiter list = 1;
+}
