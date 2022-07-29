@@ -48,11 +48,12 @@ func (s *Service) Take(ctx context.Context, req *pb.Limiter, ret *pb.Limiter) er
 	s.lock.RLock()
 	limiter, found := s.mp[req.GetName()]
 	s.lock.RUnlock()
-	if found {
-		now := time.Now()
-		t := limiter.Take()
-		ret.Interval = t.Sub(now).Nanoseconds()
+	if !found && req.GetRate() > 0 && req.GetInterval() > 0 {
+		s.NewLimiter(ctx, req, nil)
 	}
+	now := time.Now()
+	t := limiter.Take()
+	ret.Interval = t.Sub(now).Nanoseconds()
 	return nil
 }
 

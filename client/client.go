@@ -31,10 +31,7 @@ func (c *Client) Close() {
 
 func (c *Client) NewLimiter(ctx context.Context, name string, rate int, interval time.Duration) error {
 	clt := rpc.GetClientFromPool(c.pool)
-	req := new(pb.Limiter)
-	req.Name = name
-	req.Rate = int32(rate)
-	req.Interval = int64(interval)
+	req := pb.NewLimiter(name, rate, interval)
 	return clt.Call(ctx, "NewLimiter", req, nil)
 }
 
@@ -45,10 +42,8 @@ func (c *Client) RemoveLimiter(ctx context.Context, name string) error {
 	return clt.Call(ctx, "RemoveLimiter", req, nil)
 }
 
-func (c *Client) Take(ctx context.Context, name string) (time.Duration, error) {
+func (c *Client) Take(ctx context.Context, req *pb.Limiter) (time.Duration, error) {
 	clt := rpc.GetClientFromPool(c.pool)
-	req := new(pb.Limiter)
-	req.Name = name
 	ret := new(pb.Limiter)
 	err := clt.Call(ctx, "Take", req, ret)
 	return time.Duration(ret.Interval), err
