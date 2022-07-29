@@ -9,7 +9,6 @@ type Config struct {
 	DisableLogger     bool
 	PrometheusEnabled bool
 	PrometheusGateway string
-	Console           bool
 	Profile           bool
 	Debug             bool
 }

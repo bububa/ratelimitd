@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 
 	"github.com/golang/protobuf/proto"
 
@@ -48,17 +49,22 @@ func (s *Service) Take(ctx context.Context, req *pb.Limiter, ret *pb.Limiter) er
 	limiter, found := s.mp[req.GetName()]
 	s.lock.RUnlock()
 	if found {
-		limiter.Take()
+		now := time.Now()
+		t := limiter.Take()
+		ret.Interval = t.Sub(now).Nanoseconds()
 	}
 	return nil
 }
 
 func (s *Service) List(ctx context.Context, req *pb.Limiter, ret *pb.LimiterList) error {
 	s.lock.RLock()
+	cfgs := make([]*pb.Limiter, 0, len(s.mp))
 	for _, limiter := range s.mp {
-		ret.List = append(ret.List, limiter.Config())
+		cfg := limiter.Config()
+		cfgs = append(cfgs, cfg)
 	}
 	s.lock.RUnlock()
+	ret.List = cfgs
 	return nil
 }
 

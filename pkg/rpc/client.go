@@ -29,7 +29,11 @@ func newClientPool(cfg conf.ClientConfig, poolSize int, serializeType protocol.S
 		logger.Error().Err(err).Send()
 		return nil, err
 	}
-	return client.NewXClientPool(poolSize, cfg.Name, client.Failtry, client.RandomSelect, discover, option), nil
+	name := cfg.Name
+	if name == "" {
+		name = "ratelimitd"
+	}
+	return client.NewXClientPool(poolSize, name, client.Failtry, client.RandomSelect, discover, option), nil
 }
 
 func GetClientFromPool(pool *client.XClientPool) client.XClient {

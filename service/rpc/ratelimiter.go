@@ -15,12 +15,13 @@ type Limiter struct {
 
 func NewLimiter(conf *pb.Limiter) *Limiter {
 	return &Limiter{
+		conf:   conf,
 		bucket: ratelimit.New(int(conf.GetRate()), ratelimit.Per(time.Duration(conf.GetInterval()))),
 	}
 }
 
-func (l *Limiter) Take() {
-	l.bucket.Take()
+func (l *Limiter) Take() time.Time {
+	return l.bucket.Take()
 }
 
 func (l *Limiter) Config() *pb.Limiter {

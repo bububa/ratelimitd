@@ -45,14 +45,16 @@ func (c *Client) RemoveLimiter(ctx context.Context, name string) error {
 	return clt.Call(ctx, "RemoveLimiter", req, nil)
 }
 
-func (c *Client) Take(ctx context.Context, name string) error {
+func (c *Client) Take(ctx context.Context, name string) (time.Duration, error) {
 	clt := rpc.GetClientFromPool(c.pool)
 	req := new(pb.Limiter)
 	req.Name = name
-	return clt.Call(ctx, "Take", req, nil)
+	ret := new(pb.Limiter)
+	err := clt.Call(ctx, "Take", req, ret)
+	return time.Duration(ret.Interval), err
 }
 
-func (c *Client) List(ctx context.Context, name string, ret *pb.LimiterList) error {
+func (c *Client) List(ctx context.Context, ret *pb.LimiterList) error {
 	clt := rpc.GetClientFromPool(c.pool)
-	return clt.Call(ctx, "List", nil, ret)
+	return clt.Call(ctx, "List", new(pb.Limiter), ret)
 }
