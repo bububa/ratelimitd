@@ -2,6 +2,7 @@ package rpc
 
 import (
 	"context"
+	"errors"
 	"os"
 	"path/filepath"
 	"sync"
@@ -31,11 +32,16 @@ func NewService(ctx context.Context, storagePath string) (*Service, error) {
 }
 
 func (s *Service) NewLimiter(ctx context.Context, req *pb.Limiter, ret *pb.Limiter) error {
-	s.newLimiter(req)
+	if limiter := s.newLimiter(req); limiter == nil {
+		return errors.New("invalid limiter")
+	}
 	return nil
 }
 
 func (s *Service) newLimiter(req *pb.Limiter) *Limiter {
+	if !req.IsValid() {
+		return nil
+	}
 	v := new(pb.Limiter)
 	v.Interval = req.GetInterval()
 	v.Name = req.GetName()
@@ -58,8 +64,12 @@ func (s *Service) Take(ctx context.Context, req *pb.Limiter, ret *pb.Limiter) er
 	s.lock.RLock()
 	limiter, found := s.mp[req.GetName()]
 	s.lock.RUnlock()
-	if !found && req.GetRate() > 0 && req.GetInterval() > 0 {
-		limiter = s.newLimiter(req)
+	if !found {
+		if req.IsValid() {
+			limiter = s.newLimiter(req)
+		} else {
+			return errors.New("invalid limiter")
+		}
 	}
 	now := time.Now()
 	t := limiter.Take()
@@ -72,6 +82,9 @@ func (s *Service) List(ctx context.Context, req *pb.Limiter, ret *pb.LimiterList
 	cfgs := make([]*pb.Limiter, 0, len(s.mp))
 	for _, limiter := range s.mp {
 		cfg := limiter.Config()
+		if !cfg.IsValid() {
+			continue
+		}
 		cfgs = append(cfgs, cfg)
 	}
 	s.lock.RUnlock()
@@ -109,6 +122,9 @@ func (s *Service) load(ctx context.Context) error {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 	for _, cfg := range limiters.GetList() {
+		if !cfg.IsValid() {
+			continue
+		}
 		s.mp[cfg.GetName()] = NewLimiter(cfg)
 	}
 	return nil

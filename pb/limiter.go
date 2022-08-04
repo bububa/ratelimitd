@@ -9,3 +9,7 @@ func NewLimiter(name string, rate int, interval time.Duration) *Limiter {
 	ret.Interval = interval.Nanoseconds()
 	return ret
 }
+
+func (l *Limiter) IsValid() bool {
+	return l.GetRate() > 0 && l.GetInterval() > 0
+}
