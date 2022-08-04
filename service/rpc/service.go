@@ -31,10 +31,20 @@ func NewService(ctx context.Context, storagePath string) (*Service, error) {
 }
 
 func (s *Service) NewLimiter(ctx context.Context, req *pb.Limiter, ret *pb.Limiter) error {
-	s.lock.Lock()
-	s.mp[req.GetName()] = NewLimiter(req)
-	s.lock.Unlock()
+	s.newLimiter(req)
 	return nil
+}
+
+func (s *Service) newLimiter(req *pb.Limiter) *Limiter {
+	v := new(pb.Limiter)
+	v.Interval = req.GetInterval()
+	v.Name = req.GetName()
+	v.Rate = req.GetRate()
+	limiter := NewLimiter(v)
+	s.lock.Lock()
+	s.mp[req.GetName()] = limiter
+	s.lock.Unlock()
+	return limiter
 }
 
 func (s *Service) RemoveLimiter(ctx context.Context, req *pb.Limiter, ret *pb.Limiter) error {
@@ -49,7 +59,7 @@ func (s *Service) Take(ctx context.Context, req *pb.Limiter, ret *pb.Limiter) er
 	limiter, found := s.mp[req.GetName()]
 	s.lock.RUnlock()
 	if !found && req.GetRate() > 0 && req.GetInterval() > 0 {
-		s.NewLimiter(ctx, req, nil)
+		limiter = s.newLimiter(req)
 	}
 	now := time.Now()
 	t := limiter.Take()

@@ -49,6 +49,12 @@ func (c *Client) Take(ctx context.Context, req *pb.Limiter) (time.Duration, erro
 	return time.Duration(ret.Interval), err
 }
 
+func (c *Client) TakeAsync(ctx context.Context, req *pb.Limiter, ch <-chan time.Duration) (*client.Call, error) {
+	clt := rpc.GetClientFromPool(c.pool)
+	ret := new(pb.Limiter)
+	return clt.Go(ctx, "Take", req, ret, nil)
+}
+
 func (c *Client) List(ctx context.Context, ret *pb.LimiterList) error {
 	clt := rpc.GetClientFromPool(c.pool)
 	return clt.Call(ctx, "List", new(pb.Limiter), ret)
