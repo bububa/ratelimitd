@@ -1,6 +1,7 @@
 package rpc
 
 import (
+	"github.com/smallnest/rpcx/log"
 	"github.com/smallnest/rpcx/protocol"
 	"github.com/smallnest/rpcx/server"
 	"github.com/smallnest/rpcx/share"
@@ -11,6 +12,7 @@ import (
 )
 
 func NewServer(cfg *conf.Config, srv interface{}) *server.Server {
+	log.SetDummyLogger()
 	share.Codecs[protocol.SerializeType(4)] = &codec.Msgpack{}
 	share.Codecs[protocol.SerializeType(5)] = &codec.Protobuf{}
 	s := server.NewServer()
