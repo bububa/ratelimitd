@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	zerolog.CallerMarshalFunc = func(file string, line int) string {
+	zerolog.CallerMarshalFunc = func(pc uintptr, file string, line int) string {
 		dir, fileName := path.Split(file)
 		_, lastPath := path.Split(strings.TrimSuffix(dir, "/"))
 		filePath := fileName
