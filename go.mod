@@ -3,7 +3,7 @@ module github.com/bububa/ratelimitd
 go 1.17
 
 require (
-	github.com/buger/jsonparser v1.1.1
+	github.com/buger/jsonparser v1.1.2
 	github.com/getsentry/sentry-go v0.13.0
 	github.com/golang/protobuf v1.5.2
 	github.com/jinzhu/configor v1.2.1
@@ -26,7 +26,6 @@ require (
 	github.com/cenk/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
-	github.com/cheekybits/genny v1.0.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/dgryski/go-jump v0.0.0-20211018200510-ba001c3ffce0 // indirect
 	github.com/edwingeng/doublejump v1.0.1 // indirect
@@ -49,8 +48,6 @@ require (
 	github.com/klauspost/cpuid/v2 v2.1.1 // indirect
 	github.com/klauspost/reedsolomon v1.10.0 // indirect
 	github.com/lucas-clemente/quic-go v0.29.0 // indirect
-	github.com/marten-seemann/qtls-go1-16 v0.1.5 // indirect
-	github.com/marten-seemann/qtls-go1-17 v0.1.2 // indirect
 	github.com/marten-seemann/qtls-go1-18 v0.1.2 // indirect
 	github.com/marten-seemann/qtls-go1-19 v0.1.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
